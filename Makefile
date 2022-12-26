@@ -5,7 +5,7 @@ run:
 	bin/nodejs-package.js 10
 
 install-deps:
-	npm ci
+	npm i
 
 test:
 	npm test
