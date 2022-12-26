@@ -1,5 +1,8 @@
+// eslint-disable-next-line import/extensions
+import foo from '../src/index.js';
+
 test('hello', () => {
   expect(
-    'a',
-  ).toEqual('a');
+    foo(),
+  ).toEqual(4);
 });

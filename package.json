@@ -11,6 +11,11 @@
     "watch": "webpack --watch",
     "serve": "webpack serve"
   },
+  "jest": {
+    "transform": {
+      "^.+\\.[t|j]sx?$": "babel-jest"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Hydro-Dog/frontend-project-11.git"
@@ -22,7 +27,9 @@
   },
   "homepage": "https://github.com/Hydro-Dog/frontend-project-11#readme",
   "devDependencies": {
+    "@babel/preset-env": "^7.20.2",
     "@webpack-cli/generators": "^3.0.1",
+    "babel-jest": "^29.3.1",
     "eslint": "^8.30.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
@@ -32,5 +39,6 @@
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^4.11.1",
     "workbox-webpack-plugin": "^6.5.4"
-  }
+  },
+  "type": "module"
 }
