@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/Hydro-Dog/frontend-project-11#readme",
   "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.20.7",
     "@babel/preset-env": "^7.20.2",
     "@webpack-cli/generators": "^3.0.1",
     "babel-jest": "^29.3.1",
