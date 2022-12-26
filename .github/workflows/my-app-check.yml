@@ -11,7 +11,7 @@ jobs:
       - run: npx jest
       - run: echo "🍏 This job's status is ${{ job.status }}."
       - name: Run test & publish code coverage
-        uses: paambaati/codeclimate-action@v2.6.0
+        # uses: paambaati/codeclimate-action@v2.6.0
         # Add Code Climate secret key
         # env:
         #   CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
