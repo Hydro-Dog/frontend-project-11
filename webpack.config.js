@@ -1,8 +1,19 @@
+/* eslint-disable no-underscore-dangle */
 // Generated using webpack-cli https://github.com/webpack/webpack-cli
 
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
+import path from 'path';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import WorkboxWebpackPlugin from 'workbox-webpack-plugin';
+import precss from 'precss';
+import autoprefixer from 'autoprefixer';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// const path = require('path');
+// const HtmlWebpackPlugin = require('html-webpack-plugin');
+// const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -30,13 +41,18 @@ const config = {
         type: 'asset',
       },
 
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+      },
+
       // Add your rules for custom modules here
       // Learn more about loaders from https://webpack.js.org/loaders/
     ],
   },
 };
 
-module.exports = () => {
+export default () => {
   if (isProduction) {
     config.mode = 'production';
 
