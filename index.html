@@ -1,18 +1,27 @@
 <!DOCTYPE html>
-<!-- <link rel="stylesheet" href="styles.css"> -->
 <html>
     <head>
         <meta charset="utf-8" />
         <title>Webpack App</title>
     </head>
-    <body>
-        <form id="rss-feed-form">
-            <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">RSS feed link</label>
-              <input type="text" class="form-control" id="rss-feed-input" >
+    <body class="flex-grow-1">
+        <div class="container-fluid bg-dark p-5">
+            <div class="row">
+                <div class=" mx-auto text-white">
+                    <form class="row g-3" id="rss-feed-form">
+                        <div class="row align-items-start">
+                            <label for="exampleInputEmail" class="form-label" id="input-label"></label>
+                            <div class="col-md-4">
+                              <input type="text" class="form-control" id="rss-feed-input">
+                              <div id="validation-error" class="valid-feedback"></div>
+                            </div>
+                            <button type="submit" class="col-auto btn btn-primary" id="form-submit"></button>
+                        </div>
+                        </form>
+
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-          </form>
+        </div>
     </body>
     
     <script>
