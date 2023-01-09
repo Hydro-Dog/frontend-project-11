@@ -3,6 +3,7 @@ import axios from 'axios';
 import { state } from './state.js';
 import { schema } from './utils.js';
 import { i18nextInstance } from './i18n.js';
+import { parseRss } from './rss-parser.js';
 
 const feedForm = document.getElementById('rss-feed-form');
 const feedInput = document.getElementById('rss-feed-input');
@@ -15,7 +16,7 @@ const resetInputValidityView = (isValid, error) => {
     feedInput.classList.remove('is-invalid');
     inputValidationErrorDiv.classList.add('valid-feedback');
     inputValidationErrorDiv.classList.remove('invalid-feedback');
-    inputValidationErrorDiv.innerHTML = '';
+    inputValidationErrorDiv.innerHTML = i18nextInstance.t('SUCCESS');
   } else {
     inputValidationErrorDiv.innerHTML = i18nextInstance.t(error);
     feedInput.classList.add('is-invalid');
@@ -40,21 +41,26 @@ export const watchedObject = onChange(state, (path, value, previousValue, applyD
 
   if (path === 'inputValue') {
     schema.validate({ inputValue: value }).then(() => {
-      state.feedsUrls.push(value);
-      state.inputValue = '';
-      feedForm.reset();
-
       watchedObject.loading = true;
-      return axios.get(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(value)}`);
+      return axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(value)}`);
     }).then((response) => {
       if (!response.data.status.error && response.data.contents) {
         return response.data.contents;
       }
       throw new Error('URL_NO_DATA_VALIDATION_ERROR');
-    }).then(() => {
+    }).then((content) => {
+      parseRss(content);
       resetInputValidityView(true);
+      state.feedsUrls.push(value);
+      state.inputValue = '';
+      feedForm.reset();
     })
       .catch((err) => {
+        console.log('err: ', err,);
+        if (err.code === 'ERR_NETWORK') {
+          return Promise.reject(err.code);
+        }
+
         if (err?.errors) {
           return Promise.reject(err.errors[0]);
         }

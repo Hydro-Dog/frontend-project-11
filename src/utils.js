@@ -7,3 +7,7 @@ export const schema = yup.object().shape({
     .test('value-duplicate', 'VALUE_DUPLICATE_ERROR', (value) => state.feedsUrls.every((source) => value !== source))
     .required('REQUIRED_VALIDATION_ERROR'),
 });
+
+export const generateId = () => Math.floor((1 + Math.random()) * 0x10000)
+  .toString(16)
+  .substring(1);
