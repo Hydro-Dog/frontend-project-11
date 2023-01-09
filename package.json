@@ -49,6 +49,7 @@
   },
   "type": "module",
   "dependencies": {
+    "axios": "^1.2.2",
     "bootstrap": "^5.2.3",
     "i18next": "^22.4.6",
     "jquery": "^3.6.3",

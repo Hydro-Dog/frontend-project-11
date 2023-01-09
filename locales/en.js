@@ -6,6 +6,8 @@ export default {
       URL_VALIDATION_ERROR: "Should be valid url address",
       VALUE_DUPLICATE_ERROR: "Duplicated URL",
       REQUIRED_VALIDATION_ERROR: "Field is required",
+      EXAMPLE: "Example: ",
+      URL_NO_DATA_VALIDATION_ERROR: "No valid RSS"
       // RESET: 'Reset',
       // COUNT_zero: "clicks",
       // COUNT_one: "click",

@@ -8,6 +8,8 @@ export default {
       URL_VALIDATION_ERROR: "Ссылка должна быть валидным URL",
       VALUE_DUPLICATE_ERROR: "URL уже был добавлен",
       REQUIRED_VALIDATION_ERROR: "Заполните поле",
+      EXAMPLE: "Пример: ",
+      URL_NO_DATA_VALIDATION_ERROR: "Ресурс не содержит валидный RSS"
       // RESET: 'Сбросить',
       // COUNT_zero: "кликов",
       // COUNT_one: "клик",
