@@ -11,7 +11,10 @@ export default {
       ERR_NETWORK: "Ошибка сети",
       SUCCESS: "RSS загружен",
       EXAMPLE: "Пример: ",
-      URL_NO_DATA_VALIDATION_ERROR: "Ресурс не содержит валидный RSS"
+      URL_NO_DATA_VALIDATION_ERROR: "Ресурс не содержит валидный RSS",
+      OPEN: "Открыть",
+      POSTS: "Посты",
+      FEEDS: "Фиды",
       // RESET: 'Сбросить',
       // COUNT_zero: "кликов",
       // COUNT_one: "клик",

@@ -9,7 +9,10 @@ export default {
       ERR_NETWORK: "Network error",
       SUCCESS: "RSS downloaded",
       EXAMPLE: "Example: ",
-      URL_NO_DATA_VALIDATION_ERROR: "No valid RSS"
+      URL_NO_DATA_VALIDATION_ERROR: "No valid RSS",
+      OPEN: "Open",
+      POSTS: "Posts",
+      FEEDS: "Feeds",
       // RESET: 'Reset',
       // COUNT_zero: "clicks",
       // COUNT_one: "click",

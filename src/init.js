@@ -8,7 +8,7 @@ import { i18nextInstance } from './i18n.js';
 // Начальная функция
 export default () => {
   i18nextInstance.init({
-    lng: 'ru',
+    lng: 'en',
     resources: {
       ru: resources.ru,
       en: resources.en,
@@ -19,10 +19,14 @@ export default () => {
     const feedInputLabel = document.getElementById('input-label');
     const formSubmitButton = document.getElementById('form-submit');
     const exampleBlock = document.getElementById('example-block');
+    const feedsHeader = document.getElementById('feeds-header');
+    const postsHeader = document.getElementById('posts-header');
 
     feedInputLabel.innerHTML = i18nextInstance.t('INPUT_LABEL');
     formSubmitButton.innerHTML = i18nextInstance.t('SUBMIT');
     exampleBlock.innerHTML = `${i18nextInstance.t('EXAMPLE')}https://ru.hexlet.io/lessons.rss`;
+    feedsHeader.innerHTML = i18nextInstance.t('FEEDS');
+    postsHeader.innerHTML = i18nextInstance.t('POSTS');
 
     feedForm.addEventListener('submit', (e) => {
       e.preventDefault();

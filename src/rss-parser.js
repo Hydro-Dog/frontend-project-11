@@ -9,22 +9,18 @@ const parse = (data, feedId) => {
   const id = generateId();
   const items = Array.prototype.map.call(data.querySelectorAll('item'), (item) => parse(item, id));
 
-  const a = {
+  return items.length ? {
     feed: {
       title, description, link, id,
     },
     items,
-  };
-
-  return items.length ? a : {
+  } : {
     title, description, link, feedId,
   };
 };
 
 export const parseRss = (content) => {
   const data = rssToDomNode(content);
-  const res = parse(data);
 
-  console.log('res: ', res);
-  return res;
+  return parse(data);
 };

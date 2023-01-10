@@ -9,6 +9,10 @@ const feedForm = document.getElementById('rss-feed-form');
 const feedInput = document.getElementById('rss-feed-input');
 const inputValidationErrorDiv = document.getElementById('validation-error');
 const formSubmitButton = document.getElementById('form-submit');
+const postsList = document.getElementById('posts-list');
+const feedsList = document.getElementById('feeds-list');
+const feedsHeader = document.getElementById('feeds-header');
+const postsHeader = document.getElementById('posts-header');
 
 const resetInputValidityView = (isValid, error) => {
   if (isValid) {
@@ -34,6 +38,17 @@ export const watchedObject = onChange(state, (path, value, previousValue, applyD
 //   console.log('value:', value);
 //   console.log('previousValue:', previousValue);
 //   console.log('applyData:', applyData);
+
+  if (path === 'feedItems') {
+    postsList.innerHTML = value.map((item) => `<li class="list-group-item d-flex justify-content-between align-items-start border-0 border-end-0"><a href="${item.link}" class="fw-bold" data-id="${item.id}" target="_blank" >${item.title}</a><button type="button" class="btn btn-outline-primary btn-sm" id="${item.id}" data-bs-toggle="modal" data-bs-target="#modal">${i18nextInstance.t('OPEN')}</button></li>`).join('');
+    postsHeader.hidden = false;
+  }
+
+  if (path === 'feedSources') {
+    feedsList.innerHTML = value.map((item) => `<li class="list-group-item border-0 border-end-0"><h3 class="h6 m-0">${item.title}</h3><p class="m-0 small text-black-50">${item.description}</p></li>`).join('');
+    feedsHeader.hidden = false;
+  }
+
   if (path === 'loading') {
     feedInput.disabled = value;
     formSubmitButton.disabled = value;
@@ -49,14 +64,20 @@ export const watchedObject = onChange(state, (path, value, previousValue, applyD
       }
       throw new Error('URL_NO_DATA_VALIDATION_ERROR');
     }).then((content) => {
-      parseRss(content);
-      resetInputValidityView(true);
-      state.feedsUrls.push(value);
-      state.inputValue = '';
-      feedForm.reset();
+      try {
+        const feedData = parseRss(content);
+        watchedObject.feedItems = [...feedData.items, ...state.feedItems];
+        watchedObject.feedSources = [feedData.feed, ...state.feedSources];
+        state.feedsUrls.push(value);
+        state.inputValue = '';
+
+        resetInputValidityView(true);
+        feedForm.reset();
+      } catch (error) {
+        throw new Error('URL_NO_DATA_VALIDATION_ERROR');
+      }
     })
       .catch((err) => {
-        console.log('err: ', err,);
         if (err.code === 'ERR_NETWORK') {
           return Promise.reject(err.code);
         }
