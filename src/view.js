@@ -115,7 +115,7 @@ export const watchedObject = onChange(state, (path, value) => {
     }
   }).then(() => new Promise((res) => {
     setTimeout(() => { res(updateFeed(url, false)); }, 5000);
-  }));
+  }).catch(console.error));
 
   if (path === 'feedItems') {
     postsList.innerHTML = Object.values(value).map((item) => `<li class="list-group-item d-flex justify-content-between align-items-start border-0 border-end-0"><a href="${item.link}" class="fw-bold" id="${item.id}" target="_blank" >${item.title}</a><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal" data-id="${item.id}">${i18nextInstance.t('OPEN')}</button></li>`).join('');

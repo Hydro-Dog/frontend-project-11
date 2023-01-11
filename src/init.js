@@ -43,7 +43,7 @@ export default () => {
         watchedObject.visitedPosts.unshift(event.target.id);
       }
     });
-  });
+  }).catch(console.error);
 };
 
 // resources[lang].translation.COUNT_zero
