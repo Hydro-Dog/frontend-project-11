@@ -10,7 +10,6 @@ import {
   postsHeader,
   postsList,
   closeModalButton,
-  readFullPostButton,
 } from './view.js';
 import { i18nextInstance } from './i18n.js';
 
@@ -21,7 +20,6 @@ const initTexts = () => {
   feedsHeader.innerHTML = i18nextInstance.t('FEEDS');
   postsHeader.innerHTML = i18nextInstance.t('POSTS');
   closeModalButton.innerHTML = i18nextInstance.t('CLOSE');
-  readFullPostButton.innerHTML = i18nextInstance.t('READ');
 };
 
 export default () => {

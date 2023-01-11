@@ -78,13 +78,12 @@ const initModal = (posts) => {
 
     const modalTitle = modal.querySelector('#modal-title');
     const modalBody = modal.querySelector('#modal-body');
-    const readButton = modal.querySelector('#read-full-post');
+    const readButtonLink = modal.querySelector('#read-full-post-link');
 
     modalTitle.textContent = post.title;
     modalBody.textContent = post.description;
-    readButton.addEventListener('click', () => {
-      window.open(post.link, '_blank');
-    });
+    readButtonLink.href = post.link;
+    readButtonLink.textContent = i18nextInstance.t('READ');
   });
 };
 
