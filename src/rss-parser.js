@@ -1,12 +1,10 @@
-import { generateId } from './utils.js';
-
 const rssToDomNode = (content) => new window.DOMParser().parseFromString(content, 'text/xml');
 
 const parse = (data, feedId) => {
   const title = data.querySelector('title').innerHTML;
   const description = data.querySelector('description').innerHTML;
   const link = data.querySelector('link').innerHTML;
-  const id = generateId();
+  const id = btoa(unescape(encodeURIComponent(title))).slice(0, 19);
   const items = Array.prototype.map.call(data.querySelectorAll('item'), (item) => parse(item, id));
 
   return items.length ? {
@@ -15,7 +13,7 @@ const parse = (data, feedId) => {
     },
     items,
   } : {
-    title, description, link, feedId,
+    title, description, link, feedId, id,
   };
 };
 

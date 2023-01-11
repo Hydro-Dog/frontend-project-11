@@ -12,9 +12,11 @@ export default {
       SUCCESS: "RSS загружен",
       EXAMPLE: "Пример: ",
       URL_NO_DATA_VALIDATION_ERROR: "Ресурс не содержит валидный RSS",
-      OPEN: "Открыть",
+      OPEN: "Просмотр",
       POSTS: "Посты",
       FEEDS: "Фиды",
+      CLOSE: "Закрыть",
+      READ: "Читать полностью"
       // RESET: 'Сбросить',
       // COUNT_zero: "кликов",
       // COUNT_one: "клик",

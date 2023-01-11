@@ -13,6 +13,8 @@ export default {
       OPEN: "Open",
       POSTS: "Posts",
       FEEDS: "Feeds",
+      CLOSE: "Close",
+      READ: "Read"
       // RESET: 'Reset',
       // COUNT_zero: "clicks",
       // COUNT_one: "click",
