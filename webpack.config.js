@@ -21,6 +21,7 @@ const config = {
     port: 8080,
     hot: true,
   },
+  plugins: [],
   module: {
     rules: [
       {
