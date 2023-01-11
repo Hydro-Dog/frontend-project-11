@@ -1,3 +1,6 @@
+install:
+	npm ci
+
 install-deps:
 	npm ci
 
