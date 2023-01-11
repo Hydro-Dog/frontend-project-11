@@ -1,2 +1,1 @@
-{"/Users/vladislavbabaev/Documents/Hexlet/frontend-project-11/src/index.js": {"path":"/Users/vladislavbabaev/Documents/Hexlet/frontend-project-11/src/index.js","statementMap":{"0":{"start":{"line":1,"column":0},"end":{"line":1,"column":27}},"1":{"start":{"line":3,"column":29},"end":{"line":3,"column":38}}},"fnMap":{"0":{"name":"(anonymous_0)","decl":{"start":{"line":3,"column":15},"end":{"line":3,"column":16}},"loc":{"start":{"line":3,"column":27},"end":{"line":3,"column":40}},"line":3}},"branchMap":{},"s":{"0":1,"1":1},"f":{"0":1},"b":{},"_coverageSchema":"1a1c01bbd47fc00a2c39e90264f33305004495a9","hash":"13b091af661a489ed2744844b64336d5aaed7331"}
-}
+{}
