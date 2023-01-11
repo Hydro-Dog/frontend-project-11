@@ -111,7 +111,9 @@ export const watchedObject = onChange(state, (path, value) => {
 
       if (updateFormState) {
         state.inputValue = '';
-        // watchedObject.error = '';
+        setTimeout(() => {
+          feedInput.focus();
+        }, 0);
         feedForm.reset();
         watchedObject.loading = false;
         resetInputValidityView('success');
