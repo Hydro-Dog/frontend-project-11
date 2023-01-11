@@ -19,18 +19,24 @@ export const postsHeader = document.getElementById('posts-header');
 export const closeModalButton = document.getElementById('close-modal');
 export const readFullPostButton = document.getElementById('read-full-post');
 
-const resetInputValidityView = (error) => {
-  if (!error) {
+const resetInputValidityView = (fieldState, error = '') => {
+  if (fieldState === 'success') {
     feedInput.classList.add('is-valid');
     feedInput.classList.remove('is-invalid');
     inputValidationErrorDiv.classList.add('valid-feedback');
     inputValidationErrorDiv.classList.remove('invalid-feedback');
     inputValidationErrorDiv.innerHTML = i18nextInstance.t('SUCCESS');
-  } else {
+  } else if (fieldState === 'error') {
     inputValidationErrorDiv.innerHTML = i18nextInstance.t(error);
     feedInput.classList.add('is-invalid');
     feedInput.classList.remove('is-valid');
     inputValidationErrorDiv.classList.add('invalid-feedback');
+    inputValidationErrorDiv.classList.remove('valid-feedback');
+  } else {
+    inputValidationErrorDiv.innerHTML = '';
+    feedInput.classList.remove('is-invalid');
+    feedInput.classList.remove('is-valid');
+    inputValidationErrorDiv.classList.remove('invalid-feedback');
     inputValidationErrorDiv.classList.remove('valid-feedback');
   }
 };
@@ -105,10 +111,10 @@ export const watchedObject = onChange(state, (path, value) => {
 
       if (updateFormState) {
         state.inputValue = '';
-        watchedObject.error = '';
+        // watchedObject.error = '';
         feedForm.reset();
         watchedObject.loading = false;
-        resetInputValidityView('');
+        resetInputValidityView('success');
       }
     } catch (error) {
       throw new Error('data parse error');
@@ -129,16 +135,13 @@ export const watchedObject = onChange(state, (path, value) => {
     initModal(state.feedItems);
   }
 
-  if (path === 'error') {
-    resetInputValidityView(value);
-  }
-
   if (path === 'loading') {
     feedInput.disabled = value;
     formSubmitButton.disabled = value;
   }
 
   if (path === 'inputValue') {
+    resetInputValidityView();
     formValidationSchema.validate({ inputValue: value }).then(() => {
       watchedObject.loading = true;
       return updateFeed(value);
@@ -153,7 +156,7 @@ export const watchedObject = onChange(state, (path, value) => {
       return Promise.reject(err.message);
     })
       .catch(((err) => {
-        watchedObject.error = err;
+        resetInputValidityView('error', err);
         watchedObject.loading = false;
       }));
   }

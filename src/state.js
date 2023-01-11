@@ -5,6 +5,5 @@ export const state = {
   feedItems: [],
   lang: 'ru',
   loading: false,
-  error: '',
   visitedPosts: [],
 };
