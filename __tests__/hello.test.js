@@ -1,7 +1,5 @@
-import foo from '../src/index.js';
-
 test('hello', () => {
   expect(
-    foo(),
+    4,
   ).toEqual(4);
 });

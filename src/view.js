@@ -72,9 +72,13 @@ const initModal = (posts) => {
 
     const modalTitle = modal.querySelector('#modal-title');
     const modalBody = modal.querySelector('#modal-body');
+    const readButton = modal.querySelector('#read-full-post');
 
     modalTitle.textContent = post.title;
     modalBody.textContent = post.description;
+    readButton.addEventListener('click', () => {
+      window.open(post.link, '_blank');
+    });
   });
 };
 
