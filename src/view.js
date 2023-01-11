@@ -4,6 +4,7 @@ import { state } from './state.js';
 import { formValidationSchema, parseRssResponse } from './utils.js';
 import { i18nextInstance } from './i18n.js';
 import { parseRss } from './rss-parser.js';
+import { ALL_ORIGINS_URL } from './constants.js';
 
 export const feedForm = document.getElementById('rss-feed-form');
 export const feedInput = document.getElementById('rss-feed-input');
@@ -77,16 +78,8 @@ const initModal = (posts) => {
   });
 };
 
-// eslint-disable-next-line no-unused-vars
-export const watchedObject = onChange(state, (path, value, previousValue, applyData) => {
-//   console.log('state: ', state);
-//   console.log('this:', this);
-//   console.log('path:', path);
-//   console.log('value:', value);
-//   console.log('previousValue:', previousValue);
-//   console.log('applyData:', applyData);
-
-  const updateFeed = (url, updateFormState = true) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`).then((response) => parseRssResponse(response)).then((content) => {
+export const watchedObject = onChange(state, (path, value) => {
+  const updateFeed = (url, updateFormState = true) => axios.get(`${ALL_ORIGINS_URL}/get?disableCache=true&url=${encodeURIComponent(url)}`).then((response) => parseRssResponse(response)).then((content) => {
     try {
       const feedData = parseRss(content);
 
@@ -111,7 +104,7 @@ export const watchedObject = onChange(state, (path, value, previousValue, applyD
         watchedObject.error = '';
         feedForm.reset();
         watchedObject.loading = false;
-        resetInputValidityView('')
+        resetInputValidityView('');
       }
     } catch (error) {
       throw new Error('data parse error');
