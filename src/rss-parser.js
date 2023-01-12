@@ -7,8 +7,6 @@ const parse = (data, feedId) => {
   const id = encodeURIComponent(title).slice(0, 19);
   const items = Array.prototype.map.call(data.querySelectorAll('item'), (item) => parse(item, id));
 
-  // document.getElementById('example-block').innerHTML = JSON.stringify(data)
-  
   return items.length ? {
     feed: {
       title, description, link, id,
