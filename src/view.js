@@ -118,7 +118,7 @@ export const watchedObject = onChange(state, (path, value) => {
         resetInputValidityView('success');
       }
     } catch (error) {
-      throw new Error('data parse error');
+      throw new Error(error.message);
     }
   }).then(() => new Promise((res) => {
     setTimeout(() => { res(updateFeed(url, false)); }, 5000);
