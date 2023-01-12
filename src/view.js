@@ -152,7 +152,7 @@ export const watchedObject = onChange(state, (path, value) => {
       }
 
       if (err?.errors) {
-        return Promise.reject(err);
+        return Promise.reject(err.errors[0]);
       }
       return Promise.reject(err.message);
     })

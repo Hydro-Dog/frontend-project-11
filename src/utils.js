@@ -11,7 +11,7 @@ export const formValidationSchema = yup.object().shape({
 });
 
 export const parseRssResponse = (response) => {
-  if (!response.data.status.error && response.data.contents) {
+  if (!response.data?.status?.error && response.data?.contents) {
     return response.data.contents;
   }
   throw new Error('URL_NO_DATA_VALIDATION_ERROR');
