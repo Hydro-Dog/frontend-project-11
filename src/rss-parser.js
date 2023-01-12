@@ -22,8 +22,10 @@ const parse = (data, feedId) => {
   };
 };
 
-export const parseRss = (content) => {
+const parseRss = (content) => {
   const data = rssToDomNode(content);
 
   return parse(data);
 };
+
+export default parseRss;

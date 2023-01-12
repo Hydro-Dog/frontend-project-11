@@ -11,7 +11,7 @@ import {
   postsList,
   closeModalButton,
 } from './view.js';
-import { i18nextInstance } from './i18n.js';
+import i18nextInstance from './i18n.js';
 
 const initTexts = () => {
   feedInputLabel.innerHTML = i18nextInstance.t('INPUT_LABEL');

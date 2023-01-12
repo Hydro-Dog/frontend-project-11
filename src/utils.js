@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { state } from './state.js';
+import state from './state.js';
 
 export const generateId = (value) => btoa(unescape(encodeURIComponent(value))).slice(0, 20);
 

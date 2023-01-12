@@ -1,4 +1,4 @@
-export const state = {
+const state = {
   inputValue: '',
   feedsUrls: [],
   feedSources: [],
@@ -7,3 +7,5 @@ export const state = {
   loading: false,
   visitedPosts: [],
 };
+
+export default state;

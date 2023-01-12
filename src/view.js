@@ -1,10 +1,10 @@
 import onChange from 'on-change';
 import axios from 'axios';
-import { state } from './state.js';
+import state from './state.js';
 import { formValidationSchema, parseRssResponse } from './utils.js';
-import { i18nextInstance } from './i18n.js';
-import { parseRss } from './rss-parser.js';
-import { ALL_ORIGINS_URL } from './constants.js';
+import i18nextInstance from './i18n.js';
+import parseRss from './rss-parser.js';
+import ALL_ORIGINS_URL from './constants.js';
 
 export const feedForm = document.getElementById('rss-feed-form');
 export const feedInput = document.getElementById('rss-feed-input');
