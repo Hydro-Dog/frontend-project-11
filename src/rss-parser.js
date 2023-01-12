@@ -4,9 +4,11 @@ const parse = (data, feedId) => {
   const title = data.querySelector('title').innerHTML;
   const description = data.querySelector('description').innerHTML;
   const link = data.querySelector('link').innerHTML;
-  const id = btoa(unescape(encodeURIComponent(title))).slice(0, 19);
+  const id = encodeURIComponent(title).slice(0, 19);
   const items = Array.prototype.map.call(data.querySelectorAll('item'), (item) => parse(item, id));
 
+  // document.getElementById('example-block').innerHTML = JSON.stringify(data)
+  
   return items.length ? {
     feed: {
       title, description, link, id,
