@@ -90,21 +90,21 @@ const initModal = (posts) => {
 export const watchedObject = onChange(state, (path, value) => {
   const updateFeed = (url, updateFormState = true) => axios.get(`${ALL_ORIGINS_URL}/get?disableCache=true&url=${encodeURIComponent(url)}`).then((response) => parseRssResponse(response)).then((content) => {
     try {
-      const feedData = parseRss(content);
+      // const feedData = parseRss(content);
 
-      if (shouldUpdateFeedItems(feedData.items, state.feedItems)) {
-        watchedObject.feedItems = {
-          ...state.feedItems,
-          ...feedData.items.reduce((acc, item) => ({ ...acc, [item.id]: item }), {}),
-        };
-      }
+      // if (shouldUpdateFeedItems(feedData.items, state.feedItems)) {
+      //   watchedObject.feedItems = {
+      //     ...state.feedItems,
+      //     ...feedData.items.reduce((acc, item) => ({ ...acc, [item.id]: item }), {}),
+      //   };
+      // }
 
-      if (shouldUpdateFeedSources(feedData.feed, state.feedSources)) {
-        watchedObject.feedSources = {
-          ...state.feedSources,
-          [feedData.feed.id]: feedData.feed,
-        };
-      }
+      // if (shouldUpdateFeedSources(feedData.feed, state.feedSources)) {
+      //   watchedObject.feedSources = {
+      //     ...state.feedSources,
+      //     [feedData.feed.id]: feedData.feed,
+      //   };
+      // }
 
       watchedObject.feedsUrls = [...state.feedsUrls, value];
 

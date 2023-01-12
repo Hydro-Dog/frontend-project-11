@@ -7,16 +7,14 @@ const parse = (data, feedId) => {
   const id = btoa(unescape(encodeURIComponent(title))).slice(0, 19);
   const items = Array.prototype.map.call(data.querySelectorAll('item'), (item) => parse(item, id));
 
-  // return items.length ? {
-  //   feed: {
-  //     title, description, link, id,
-  //   },
-  //   items,
-  // } : {
-  //   title, description, link, feedId, id,
-  // };
-
-  return JSON.stringify(data)
+  return items.length ? {
+    feed: {
+      title, description, link, id,
+    },
+    items,
+  } : {
+    title, description, link, feedId, id,
+  };
 };
 
 export const parseRss = (content) => {
