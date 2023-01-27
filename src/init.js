@@ -4,7 +4,7 @@ import resources from '../locales/index.js';
 import i18nextInstance from './i18n.js';
 import parseRss from './rss-parser.js';
 import { shouldUpdateFeedItems, setIds } from './utils.js';
-import { getFeed } from './service.js';
+import getFeed from './service.js';
 import {
   getDomNodesRefs,
   render,
@@ -123,7 +123,6 @@ export default () => {
         .then(() => {
         })
         .catch((err) => {
-          console.log('failed', err);
           if (err.code === 'ERR_NETWORK') {
             setInputMessage(err.code);
           } else {
