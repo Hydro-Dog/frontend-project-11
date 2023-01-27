@@ -123,7 +123,13 @@ export default () => {
         .then(() => {
         })
         .catch((err) => {
-          setInputMessage(err.message);
+          console.log('failed', err);
+          if (err.code === 'ERR_NETWORK') {
+            setInputMessage(err.code);
+          } else {
+            setInputMessage(err.message);
+          }
+
           setInputState('failed');
         });
     });
