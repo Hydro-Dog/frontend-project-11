@@ -100,10 +100,10 @@ export default () => {
       setTimeout(() => { refreshFeed(feedUrl); }, 5000);
     };
 
-    const formValidationSchema = yup.object().shape({
+    const validate = (urls) => yup.object().shape({
       inputValue: yup.string()
         .url('URL_VALIDATION_ERROR')
-        .test('value-duplicate', 'VALUE_DUPLICATE_ERROR', (value) => watchedState.feedsUrls.every((source) => value !== source))
+        .test('value-duplicate', 'VALUE_DUPLICATE_ERROR', (value) => urls.every((source) => value !== source))
         .required('REQUIRED_VALIDATION_ERROR'),
     });
 
@@ -112,15 +112,16 @@ export default () => {
       const url = formData.get('feedValue');
       setInputValue(url);
       event.preventDefault();
-      formValidationSchema.validate({ inputValue: url }).then(() => {
+      validate(watchedState.feedsUrls).validate({ inputValue: url }).then(() => {
         setInputState('sending');
 
         return Promise.all([Promise.resolve(url), getFeed(url)]);
       }).then(([feedUrl, content]) => {
         setFeed(content, feedUrl);
         refreshFeed(feedUrl);
-      }).then(() => {
       })
+        .then(() => {
+        })
         .catch((err) => {
           setInputMessage(err.message);
           setInputState('failed');

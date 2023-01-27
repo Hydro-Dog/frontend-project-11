@@ -1,4 +1,12 @@
 import i18nextInstance from './i18n.js';
+import {
+  generateFeedItemLinkNode,
+  generateFeedItemLiNode,
+  generateFeedItemButtonNode,
+  generateFeedSourceParNode,
+  generateFeedSourceHeaderNode,
+  generateFeedSourceLiNode,
+} from './utils.js';
 
 export const getDomNodesRefs = () => {
   const feedForm = document.getElementById('rss-feed-form');
@@ -73,18 +81,41 @@ export const render = (path, value) => {
     if (!value) {
       feedForm.reset();
     } else {
-      feedInput.innerHTML = value;
+      feedInput.textContent = value;
     }
   }
 
   if (path === 'feedItems') {
-    postsList.innerHTML = Object.values(value).map((item) => `<li class="list-group-item d-flex justify-content-between align-items-start border-0 border-end-0"><a href="${item.link}" class="fw-bold" id="${item.id}" target="_blank" >${item.title}</a><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal" data-id="${item.id}">${i18nextInstance.t('OPEN')}</button></li>`).join('');
+    Object.values(value).forEach((item) => {
+      const linkNode = generateFeedItemLinkNode();
+      const liNode = generateFeedItemLiNode();
+      const buttonNode = generateFeedItemButtonNode();
+      linkNode.href = item.link;
+      linkNode.id = item.id;
+      linkNode.textContent = item.title;
+      buttonNode.dataset.id = item.id;
+      buttonNode.textContent = i18nextInstance.t('OPEN');
+      liNode.append(linkNode);
+      liNode.append(buttonNode);
+      postsList.append(liNode);
+    });
     postsHeader.hidden = false;
     initModal(value);
   }
 
   if (path === 'feedSources') {
-    feedsList.innerHTML = Object.values(value).map((item) => `<li class="list-group-item border-0 border-end-0"><h3 class="h6 m-0">${item.title}</h3><p class="m-0 small text-black-50">${item.description}</p></li>`).join('');
+    feedsList.innerHTML = '';
+    Object.values(value).forEach((item) => {
+      const liNode = generateFeedSourceLiNode();
+      const hNode = generateFeedSourceHeaderNode();
+      hNode.textContent = item.title;
+      const pNode = generateFeedSourceParNode();
+      pNode.textContent = item.description;
+      liNode.append(hNode);
+      liNode.append(pNode);
+      feedsList.append(liNode);
+    });
+
     feedsHeader.hidden = false;
   }
 
