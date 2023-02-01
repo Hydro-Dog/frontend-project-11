@@ -1,4 +1,3 @@
-import i18nextInstance from './i18n.js';
 import {
   generateFeedItemLinkNode,
   generateFeedItemLiNode,
@@ -46,7 +45,7 @@ const setPostAsVisited = (id) => {
   element.classList.remove('fw-bold');
 };
 
-const initModal = (posts) => {
+const initModal = (posts, i18nextInstance) => {
   const modal = document.getElementById('modal');
   modal.addEventListener('show.bs.modal', (event) => {
     const button = event.relatedTarget;
@@ -66,7 +65,8 @@ const initModal = (posts) => {
   });
 };
 
-export const render = (path, value) => {
+export const render = (domElements, i18nextInstance) => (path, value) => {
+  console.log('i18nextInstance: ', i18nextInstance);
   const {
     feedForm,
     feedInput,
@@ -76,79 +76,160 @@ export const render = (path, value) => {
     feedsHeader,
     inputValidationErrorDiv,
     formSubmitButton,
-  } = getDomNodesRefs();
-  if (path === 'inputValue') {
-    if (!value) {
-      feedForm.reset();
-    } else {
-      feedInput.textContent = value;
-    }
+  } = domElements;
+
+  switch (path) {
+    case 'inputValue':
+      if (!value) {
+        feedForm.reset();
+      } else {
+        feedInput.textContent = value;
+      }
+      break;
+
+    case 'feedItems':
+      Object.values(value).forEach((item) => {
+        const linkNode = generateFeedItemLinkNode();
+        const liNode = generateFeedItemLiNode();
+        const buttonNode = generateFeedItemButtonNode();
+        linkNode.href = item.link;
+        linkNode.id = item.id;
+        linkNode.textContent = item.title;
+        buttonNode.dataset.id = item.id;
+        buttonNode.textContent = i18nextInstance.t('OPEN');
+        liNode.append(linkNode);
+        liNode.append(buttonNode);
+        postsList.append(liNode);
+      });
+      postsHeader.hidden = false;
+      initModal(value, i18nextInstance);
+      break;
+
+    case 'feedSources':
+      feedsList.innerHTML = '';
+      Object.values(value).forEach((item) => {
+        const liNode = generateFeedSourceLiNode();
+        const hNode = generateFeedSourceHeaderNode();
+        hNode.textContent = item.title;
+        const pNode = generateFeedSourceParNode();
+        pNode.textContent = item.description;
+        liNode.append(hNode);
+        liNode.append(pNode);
+        feedsList.append(liNode);
+      });
+
+      feedsHeader.hidden = false;
+      break;
+
+    case 'inputMessage':
+      inputValidationErrorDiv.innerHTML = i18nextInstance.t(value);
+      break;
+
+    case 'inputState':
+      if (value === 'none') {
+        feedInput.classList.remove('is-valid');
+        feedInput.classList.remove('is-invalid');
+        inputValidationErrorDiv.classList.remove('valid-feedback');
+        inputValidationErrorDiv.classList.remove('invalid-feedback');
+        inputValidationErrorDiv.innerHTML = '';
+        feedInput.disabled = false;
+        formSubmitButton.disabled = false;
+      } else if (value === 'sending') {
+        feedInput.disabled = true;
+        formSubmitButton.disabled = true;
+      } else if (value === 'finished') {
+        feedInput.classList.add('is-valid');
+        feedInput.classList.remove('is-invalid');
+        inputValidationErrorDiv.classList.add('valid-feedback');
+        inputValidationErrorDiv.classList.remove('invalid-feedback');
+        feedInput.disabled = false;
+        formSubmitButton.disabled = false;
+      } else if (value === 'failed') {
+        feedInput.classList.add('is-invalid');
+        feedInput.classList.remove('is-valid');
+        inputValidationErrorDiv.classList.add('invalid-feedback');
+        inputValidationErrorDiv.classList.remove('valid-feedback');
+        feedInput.disabled = false;
+        formSubmitButton.disabled = false;
+      }
+      break;
+
+    default:
+      break;
   }
 
-  if (path === 'feedItems') {
-    Object.values(value).forEach((item) => {
-      const linkNode = generateFeedItemLinkNode();
-      const liNode = generateFeedItemLiNode();
-      const buttonNode = generateFeedItemButtonNode();
-      linkNode.href = item.link;
-      linkNode.id = item.id;
-      linkNode.textContent = item.title;
-      buttonNode.dataset.id = item.id;
-      buttonNode.textContent = i18nextInstance.t('OPEN');
-      liNode.append(linkNode);
-      liNode.append(buttonNode);
-      postsList.append(liNode);
-    });
-    postsHeader.hidden = false;
-    initModal(value);
-  }
+  // if (path === 'inputValue') {
+  //   if (!value) {
+  //     feedForm.reset();
+  //   } else {
+  //     feedInput.textContent = value;
+  //   }
+  // }
 
-  if (path === 'feedSources') {
-    feedsList.innerHTML = '';
-    Object.values(value).forEach((item) => {
-      const liNode = generateFeedSourceLiNode();
-      const hNode = generateFeedSourceHeaderNode();
-      hNode.textContent = item.title;
-      const pNode = generateFeedSourceParNode();
-      pNode.textContent = item.description;
-      liNode.append(hNode);
-      liNode.append(pNode);
-      feedsList.append(liNode);
-    });
+  // if (path === 'feedItems') {
+  //   Object.values(value).forEach((item) => {
+  //     const linkNode = generateFeedItemLinkNode();
+  //     const liNode = generateFeedItemLiNode();
+  //     const buttonNode = generateFeedItemButtonNode();
+  //     linkNode.href = item.link;
+  //     linkNode.id = item.id;
+  //     linkNode.textContent = item.title;
+  //     buttonNode.dataset.id = item.id;
+  //     buttonNode.textContent = i18nextInstance.t('OPEN');
+  //     liNode.append(linkNode);
+  //     liNode.append(buttonNode);
+  //     postsList.append(liNode);
+  //   });
+  //   postsHeader.hidden = false;
+  //   initModal(value, i18nextInstance);
+  // }
 
-    feedsHeader.hidden = false;
-  }
+  // if (path === 'feedSources') {
+  //   feedsList.innerHTML = '';
+  //   Object.values(value).forEach((item) => {
+  //     const liNode = generateFeedSourceLiNode();
+  //     const hNode = generateFeedSourceHeaderNode();
+  //     hNode.textContent = item.title;
+  //     const pNode = generateFeedSourceParNode();
+  //     pNode.textContent = item.description;
+  //     liNode.append(hNode);
+  //     liNode.append(pNode);
+  //     feedsList.append(liNode);
+  //   });
 
-  if (path === 'inputMessage') {
-    inputValidationErrorDiv.innerHTML = i18nextInstance.t(value);
-  }
+  //   feedsHeader.hidden = false;
+  // }
 
-  if (path === 'inputState') {
-    if (value === 'none') {
-      feedInput.classList.remove('is-valid');
-      feedInput.classList.remove('is-invalid');
-      inputValidationErrorDiv.classList.remove('valid-feedback');
-      inputValidationErrorDiv.classList.remove('invalid-feedback');
-      inputValidationErrorDiv.innerHTML = '';
-      feedInput.disabled = false;
-      formSubmitButton.disabled = false;
-    } else if (value === 'sending') {
-      feedInput.disabled = true;
-      formSubmitButton.disabled = true;
-    } else if (value === 'finished') {
-      feedInput.classList.add('is-valid');
-      feedInput.classList.remove('is-invalid');
-      inputValidationErrorDiv.classList.add('valid-feedback');
-      inputValidationErrorDiv.classList.remove('invalid-feedback');
-      feedInput.disabled = false;
-      formSubmitButton.disabled = false;
-    } else if (value === 'failed') {
-      feedInput.classList.add('is-invalid');
-      feedInput.classList.remove('is-valid');
-      inputValidationErrorDiv.classList.add('invalid-feedback');
-      inputValidationErrorDiv.classList.remove('valid-feedback');
-      feedInput.disabled = false;
-      formSubmitButton.disabled = false;
-    }
-  }
+  // if (path === 'inputMessage') {
+  //   inputValidationErrorDiv.innerHTML = i18nextInstance.t(value);
+  // }
+
+  // if (path === 'inputState') {
+  //   if (value === 'none') {
+  //     feedInput.classList.remove('is-valid');
+  //     feedInput.classList.remove('is-invalid');
+  //     inputValidationErrorDiv.classList.remove('valid-feedback');
+  //     inputValidationErrorDiv.classList.remove('invalid-feedback');
+  //     inputValidationErrorDiv.innerHTML = '';
+  //     feedInput.disabled = false;
+  //     formSubmitButton.disabled = false;
+  //   } else if (value === 'sending') {
+  //     feedInput.disabled = true;
+  //     formSubmitButton.disabled = true;
+  //   } else if (value === 'finished') {
+  //     feedInput.classList.add('is-valid');
+  //     feedInput.classList.remove('is-invalid');
+  //     inputValidationErrorDiv.classList.add('valid-feedback');
+  //     inputValidationErrorDiv.classList.remove('invalid-feedback');
+  //     feedInput.disabled = false;
+  //     formSubmitButton.disabled = false;
+  //   } else if (value === 'failed') {
+  //     feedInput.classList.add('is-invalid');
+  //     feedInput.classList.remove('is-valid');
+  //     inputValidationErrorDiv.classList.add('invalid-feedback');
+  //     inputValidationErrorDiv.classList.remove('valid-feedback');
+  //     feedInput.disabled = false;
+  //     formSubmitButton.disabled = false;
+  //   }
+  // }
 };

@@ -21,6 +21,8 @@ const initState = () => ({
   visitedPosts: [],
 });
 
+const TIMEOUT = 5000
+
 export default () => {
   i18nextInstance.init({
     lng: 'ru',
@@ -29,6 +31,7 @@ export default () => {
       en: resources.en,
     },
   }).then(() => {
+    const domElements = getDomNodesRefs();
     const {
       feedInputLabel,
       formSubmitButton,
@@ -38,7 +41,7 @@ export default () => {
       closeModalButton,
       feedForm,
       postsList,
-    } = getDomNodesRefs();
+    } = domElements;
 
     feedInputLabel.innerHTML = i18nextInstance.t('INPUT_LABEL');
     formSubmitButton.innerHTML = i18nextInstance.t('SUBMIT');
@@ -49,7 +52,7 @@ export default () => {
 
     const state = initState();
 
-    const watchedState = onChange(state, render);
+    const watchedState = onChange(state, render(domElements, i18nextInstance));
 
     const setInputValue = (value) => { watchedState.inputValue = value; };
     const setFeedsUrls = (value) => { watchedState.feedsUrls = value; };
@@ -97,7 +100,7 @@ export default () => {
         .then((content) => {
           setFeed(content, feedUrl);
         });
-      setTimeout(() => { refreshFeed(feedUrl); }, 5000);
+      setTimeout(() => { refreshFeed(feedUrl); }, TIMEOUT);
     };
 
     const validate = (urls) => yup.object().shape({
@@ -108,7 +111,7 @@ export default () => {
     });
 
     feedForm.addEventListener('submit', (event) => {
-      const formData = new FormData(feedForm);
+      const formData = new FormData(event.target);
       const url = formData.get('feedValue');
       setInputValue(url);
       event.preventDefault();
@@ -138,5 +141,5 @@ export default () => {
         setVisitedPosts([event.target.id, ...watchedState.visitedPosts]);
       }
     });
-  }).catch(console.error);
+  });
 };
