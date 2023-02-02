@@ -4,7 +4,7 @@ import resources from '../locales/index.js';
 import i18nextInstance from './i18n.js';
 import parseRss from './rss-parser.js';
 import { shouldUpdateFeedItems, setIds } from './utils.js';
-import getFeed from './service.js';
+import { getFeed } from './service.js';
 import {
   getDomNodesRefs,
   render,
@@ -19,9 +19,8 @@ const initState = () => ({
   inputState: 'none', // none, filling, sending, finished, failed
   inputMessage: '',
   visitedPosts: [],
+  timers: [],
 });
-
-const TIMEOUT = 5000
 
 export default () => {
   i18nextInstance.init({
@@ -54,6 +53,18 @@ export default () => {
 
     const watchedState = onChange(state, render(domElements, i18nextInstance));
 
+    const refreshFeeds = (feedUrls) => {
+      state.timers.forEach(clearTimeout);
+      const refreshRequests = feedUrls.map((item) => getFeed(item));
+
+      Promise.all(refreshRequests).then((feeds) => {
+        feeds.forEach(() => {
+          const id = setTimeout(() => { refreshFeeds(feedUrls); }, 5000);
+          state.timers = [...state.timers, id];
+        });
+      });
+    };
+
     const setInputValue = (value) => { watchedState.inputValue = value; };
     const setFeedsUrls = (value) => { watchedState.feedsUrls = value; };
     const setFeedSources = (value) => { watchedState.feedSources = value; };
@@ -83,6 +94,7 @@ export default () => {
 
         if (!state.feedsUrls.includes(feedUrl)) {
           setFeedsUrls([...state.feedsUrls, feedUrl]);
+          refreshFeeds(state.feedsUrls);
         }
 
         if (shouldUpdateInputState) {
@@ -93,14 +105,6 @@ export default () => {
       } catch (error) {
         throw new Error(error.message);
       }
-    };
-
-    const refreshFeed = (feedUrl) => {
-      getFeed(feedUrl)
-        .then((content) => {
-          setFeed(content, feedUrl);
-        });
-      setTimeout(() => { refreshFeed(feedUrl); }, TIMEOUT);
     };
 
     const validate = (urls) => yup.object().shape({
@@ -121,7 +125,7 @@ export default () => {
         return Promise.all([Promise.resolve(url), getFeed(url)]);
       }).then(([feedUrl, content]) => {
         setFeed(content, feedUrl);
-        refreshFeed(feedUrl);
+        // refreshFeed(feedUrl);
       })
         .then(() => {
         })

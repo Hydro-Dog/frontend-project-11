@@ -1,4 +1,4 @@
-const rssToDomNode = (content) => DOMParser().parseFromString(content, 'text/xml');
+const rssToDomNode = (content) => new DOMParser().parseFromString(content, 'text/xml');
 
 const parse = (data, feedId) => {
   const parserError = data.querySelector('parsererror');
