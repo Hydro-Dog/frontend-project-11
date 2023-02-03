@@ -9,6 +9,7 @@ import {
   getDomNodesRefs,
   render,
 } from './render.js';
+import { TIMEOUT } from './constants.js';
 
 const initState = () => ({
   inputValue: '',
@@ -59,7 +60,7 @@ export default () => {
 
       Promise.all(refreshRequests).then((feeds) => {
         feeds.forEach(() => {
-          const id = setTimeout(() => { refreshFeeds(feedUrls); }, 5000);
+          const id = setTimeout(() => { refreshFeeds(feedUrls); }, TIMEOUT);
           state.timers = [...state.timers, id];
         });
       });
@@ -125,7 +126,6 @@ export default () => {
         return Promise.all([Promise.resolve(url), getFeed(url)]);
       }).then(([feedUrl, content]) => {
         setFeed(content, feedUrl);
-        // refreshFeed(feedUrl);
       })
         .then(() => {
         })
