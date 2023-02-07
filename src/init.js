@@ -18,7 +18,6 @@ const initState = () => ({
   lang: 'ru',
   feedUrlUploadState: 'none', // none, filling, sending, finished, failed
   inputMessage: '',
-  visitedPosts: [],
   timers: [],
   modalData: { title: '', description: '', link: '' },
 });
@@ -41,7 +40,6 @@ export default () => {
       postsHeader,
       closeModalButton,
       feedForm,
-      postsList,
     } = domElements;
 
     feedInputLabel.innerHTML = i18nextInstance.t('INPUT_LABEL');
@@ -55,14 +53,6 @@ export default () => {
 
     const watchedState = onChange(state, render(domElements, i18nextInstance));
 
-    const setFeedsUrls = (value) => { watchedState.feedsUrls = value; };
-    const setFeedSources = (value) => { watchedState.feedSources = value; };
-    const setFeedItems = (value) => { watchedState.feedItems = value; };
-    const setModalData = (value) => { watchedState.modalData = value; };
-    const setFeedUrlUploadState = (value) => { watchedState.feedUrlUploadState = value; };
-    const setInputMessage = (value) => { watchedState.inputMessage = value; };
-    const setVisitedPosts = (value) => { watchedState.visitedPosts = value; };
-
     const pushNewFeedItems = (feedItems) => {
       const newFeedItems = {};
       Object.entries(feedItems).forEach(([key, value]) => {
@@ -71,7 +61,7 @@ export default () => {
         }
       });
 
-      setFeedItems({ ...state.feedItems, ...newFeedItems });
+      watchedState.feedItems = { ...state.feedItems, ...newFeedItems };
     };
 
     const refreshFeeds = () => {
@@ -101,8 +91,12 @@ export default () => {
         const id = button.getAttribute('data-id');
         const post = state.feedItems[id];
         post.isRead = true;
-        setFeedItems({ ...state.feedItems, [id]: post });
-        setModalData({ title: post.title, description: post.description, link: post.link });
+        watchedState.feedItems = { ...state.feedItems, [id]: post };
+        watchedState.modalData = {
+          title: post.title,
+          description: post.description,
+          link: post.link,
+        };
       });
     };
 
@@ -120,7 +114,7 @@ export default () => {
       const url = formData.get('feedValue');
       event.preventDefault();
       validate(watchedState.feedsUrls).validate({ inputValue: url }).then(() => {
-        setFeedUrlUploadState('sending');
+        watchedState.feedUrlUploadState = 'sending';
 
         return Promise.all([
           Promise.resolve(url),
@@ -129,42 +123,36 @@ export default () => {
         const rawData = parseRss(content);
         const feeds = prepareFeed(rawData);
 
-        setFeedItems({
+        watchedState.feedItems = {
           ...state.feedItems,
           ...feeds.items.reduce((acc, item) => ({ ...acc, [item.title]: item }), {}),
-        });
+        };
 
         if (!state.feedSources[feeds.feed.id]) {
-          setFeedSources({
+          watchedState.feedSources = {
             ...state.feedSources,
             [feeds.feed.id]: feeds.feed,
-          });
+          };
         }
 
         if (!state.feedsUrls.includes(feedUrl)) {
-          setFeedsUrls([...state.feedsUrls, feedUrl]);
+          watchedState.feedsUrls = [...state.feedsUrls, feedUrl];
         }
 
-        setFeedUrlUploadState('finished');
-        setInputMessage('SUCCESS');
+        watchedState.feedUrlUploadState = 'finished';
+        watchedState.inputMessage = 'SUCCESS';
       })
         .then(() => {
         })
         .catch((err) => {
           if (err.code === 'ERR_NETWORK') {
-            setInputMessage(err.code);
+            watchedState.inputMessage = err.code;
           } else {
-            setInputMessage(err.message);
+            watchedState.inputMessage = err.message;
           }
 
-          setFeedUrlUploadState('failed');
+          watchedState.feedUrlUploadState = 'failed';
         });
-    });
-
-    postsList.addEventListener('click', (event) => {
-      if (event.target.tagName === 'A') {
-        setVisitedPosts([event.target.id, ...watchedState.visitedPosts]);
-      }
     });
   });
 };
