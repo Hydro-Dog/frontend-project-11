@@ -3,7 +3,7 @@ import * as yup from 'yup';
 import resources from '../locales/index.js';
 import i18nextInstance from './i18n.js';
 import parseRss from './rss-parser.js';
-import { shouldUpdateFeedItems, prepareFeed, parseRssResponse } from './utils.js';
+import { prepareFeed, parseRssResponse } from './utils.js';
 import getFeed from './service.js';
 import {
   getDomNodesRefs,
@@ -129,12 +129,10 @@ export default () => {
         const rawData = parseRss(content);
         const feeds = prepareFeed(rawData);
 
-        if (shouldUpdateFeedItems(feeds.items, state.feedItems)) {
-          setFeedItems({
-            ...state.feedItems,
-            ...feeds.items.reduce((acc, item) => ({ ...acc, [item.title]: item }), {}),
-          });
-        }
+        setFeedItems({
+          ...state.feedItems,
+          ...feeds.items.reduce((acc, item) => ({ ...acc, [item.title]: item }), {}),
+        });
 
         if (!state.feedSources[feeds.feed.id]) {
           setFeedSources({

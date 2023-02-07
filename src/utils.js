@@ -1,7 +1,5 @@
 import { ALL_ORIGINS_URL } from './constants.js';
 
-export const generateId = (value) => btoa(unescape(encodeURIComponent(value))).slice(0, 20);
-
 export const addProxy = (url) => `${ALL_ORIGINS_URL}/get?disableCache=true&url=${encodeURIComponent(url)}`;
 
 export const parseRssResponse = (response) => {
@@ -9,15 +7,6 @@ export const parseRssResponse = (response) => {
     return response.data.contents;
   }
   throw new Error('URL_NO_DATA_VALIDATION_ERROR');
-};
-
-export const shouldUpdateFeedItems = (items, stateItems) => {
-  for (let i = 0; i < items.length; i += 1) {
-    if (stateItems[items[i].id]) {
-      return false;
-    }
-  }
-  return true;
 };
 
 export const prepareFeed = (value) => ({
