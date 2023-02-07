@@ -12,7 +12,6 @@ import {
 import { TIMEOUT } from './constants.js';
 
 const initState = () => ({
-  inputValue: '',
   feedsUrls: [],
   feedSources: [],
   feedItems: [],
@@ -21,6 +20,7 @@ const initState = () => ({
   inputMessage: '',
   visitedPosts: [],
   timers: [],
+  modalData: { title: '', description: '', link: '' },
 });
 
 export default () => {
@@ -33,6 +33,7 @@ export default () => {
   }).then(() => {
     const domElements = getDomNodesRefs();
     const {
+      modal,
       feedInputLabel,
       formSubmitButton,
       exampleBlock,
@@ -54,48 +55,15 @@ export default () => {
 
     const watchedState = onChange(state, render(domElements, i18nextInstance));
 
-    // const setInputValue = (value) => { watchedState.inputValue = value; };
     const setFeedsUrls = (value) => { watchedState.feedsUrls = value; };
     const setFeedSources = (value) => { watchedState.feedSources = value; };
     const setFeedItems = (value) => { watchedState.feedItems = value; };
+    const setModalData = (value) => { watchedState.modalData = value; };
     const setFeedUrlUploadState = (value) => { watchedState.feedUrlUploadState = value; };
     const setInputMessage = (value) => { watchedState.inputMessage = value; };
     const setVisitedPosts = (value) => { watchedState.visitedPosts = value; };
 
-    // const updateFeedData = (content, feedUrl, shouldUpdatefeedUrlUploadState = true) => {
-    //   try {
-    //     const rawData = parseRss(content);
-    //     const feeds = prepareFeed(rawData);
-
-    //     if (shouldUpdateFeedItems(feeds.items, state.feedItems)) {
-    //       setFeedItems({
-    //         ...state.feedItems,
-    //         ...feeds.items.reduce((acc, item) => ({ ...acc, [item.title]: item }), {}),
-    //       });
-    //     }
-
-    //     if (!state.feedSources[feeds.feed.id]) {
-    //       setFeedSources({
-    //         ...state.feedSources,
-    //         [feeds.feed.id]: feeds.feed,
-    //       });
-    //     }
-
-    //     if (!state.feedsUrls.includes(feedUrl)) {
-    //       setFeedsUrls([...state.feedsUrls, feedUrl]);
-    //     }
-
-    //     if (shouldUpdatefeedUrlUploadState) {
-    //       setFeedUrlUploadState('finished');
-    //       setInputMessage('SUCCESS');
-    //       // setInputValue('');
-    //     }
-    //   } catch (error) {
-    //     // throw new Error(error.message);
-    //   }
-    // };
-
-    const updateFeedItems = (feedItems) => {
+    const pushNewFeedItems = (feedItems) => {
       const newFeedItems = {};
       Object.entries(feedItems).forEach(([key, value]) => {
         if (!state.feedItems[key]) {
@@ -116,7 +84,7 @@ export default () => {
           const preparedFeed = prepareFeed(rawData);
           const feedItems = preparedFeed
             .items.reduce((acc, item) => ({ ...acc, [item.title]: item }), {});
-          updateFeedItems(feedItems);
+          pushNewFeedItems(feedItems);
         });
 
         setTimeout(() => {
@@ -128,23 +96,13 @@ export default () => {
     refreshFeeds();
 
     const initModal = () => {
-      const modal = document.getElementById('modal');
       modal.addEventListener('show.bs.modal', (event) => {
         const button = event.relatedTarget;
         const id = button.getAttribute('data-id');
         const post = state.feedItems[id];
-
-        const modalTitle = modal.querySelector('#modal-title');
-        const modalBody = modal.querySelector('#modal-body');
-        const readButtonLink = modal.querySelector('#read-full-post-link');
-
-        modalTitle.textContent = post.title;
-        modalBody.textContent = post.description;
-        readButtonLink.href = post.link;
-        readButtonLink.textContent = i18nextInstance.t('READ');
-
         post.isRead = true;
         setFeedItems({ ...state.feedItems, [id]: post });
+        setModalData({ title: post.title, description: post.description, link: post.link });
       });
     };
 
@@ -160,7 +118,6 @@ export default () => {
     feedForm.addEventListener('submit', (event) => {
       const formData = new FormData(event.target);
       const url = formData.get('feedValue');
-      // setInputValue(url);
       event.preventDefault();
       validate(watchedState.feedsUrls).validate({ inputValue: url }).then(() => {
         setFeedUrlUploadState('sending');
@@ -169,7 +126,6 @@ export default () => {
           Promise.resolve(url),
           getFeed(url).then((response) => parseRssResponse(response))]);
       }).then(([feedUrl, content]) => {
-        // updateFeedData(content, feedUrl);
         const rawData = parseRss(content);
         const feeds = prepareFeed(rawData);
 
@@ -193,7 +149,6 @@ export default () => {
 
         setFeedUrlUploadState('finished');
         setInputMessage('SUCCESS');
-        // setInputValue('');
       })
         .then(() => {
         })

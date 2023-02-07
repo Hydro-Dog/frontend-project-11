@@ -8,6 +8,7 @@ import {
 } from './utils.js';
 
 export const getDomNodesRefs = () => {
+  const modal = document.getElementById('modal');
   const feedForm = document.getElementById('rss-feed-form');
   const feedInput = document.getElementById('rss-feed-input');
   const exampleBlock = document.getElementById('example-block');
@@ -23,6 +24,7 @@ export const getDomNodesRefs = () => {
   const feedFormData = new FormData(feedForm);
 
   return {
+    modal,
     feedForm,
     feedInput,
     exampleBlock,
@@ -47,6 +49,7 @@ const setPostAsVisited = (id) => {
 
 export const render = (domElements, i18nextInstance) => (path, value) => {
   const {
+    modal,
     feedForm,
     feedInput,
     postsList,
@@ -58,13 +61,17 @@ export const render = (domElements, i18nextInstance) => (path, value) => {
   } = domElements;
 
   switch (path) {
-    // case 'inputValue':
-    //   if (!value) {
-    //     feedForm.reset();
-    //   } else {
-    //     feedInput.textContent = value;
-    //   }
-    //   break;
+    case 'modalData': {
+      const modalTitle = modal.querySelector('#modal-title');
+      const modalBody = modal.querySelector('#modal-body');
+      const readButtonLink = modal.querySelector('#read-full-post-link');
+
+      modalTitle.textContent = value.title;
+      modalBody.textContent = value.description;
+      readButtonLink.href = value.link;
+      readButtonLink.textContent = i18nextInstance.t('READ');
+      break;
+    }
 
     case 'feedItems':
       postsList.innerHTML = '';
@@ -86,7 +93,6 @@ export const render = (domElements, i18nextInstance) => (path, value) => {
         }
       });
       postsHeader.hidden = false;
-      // initModal(value, i18nextInstance);
       break;
 
     case 'feedSources':
