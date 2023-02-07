@@ -1,6 +1,6 @@
 const rssToDomNode = (content) => new DOMParser().parseFromString(content, 'text/xml');
 
-const parse = (data, feedId) => {
+const parse = (data) => {
   const parserError = data.querySelector('parsererror');
 
   if (parserError) {
@@ -17,7 +17,7 @@ const parse = (data, feedId) => {
     },
     items,
   } : {
-    title, description, link, feedId,
+    title, description, link,
   };
 };
 

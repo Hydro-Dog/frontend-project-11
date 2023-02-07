@@ -45,26 +45,6 @@ const setPostAsVisited = (id) => {
   element.classList.remove('fw-bold');
 };
 
-const initModal = (posts, i18nextInstance) => {
-  const modal = document.getElementById('modal');
-  modal.addEventListener('show.bs.modal', (event) => {
-    const button = event.relatedTarget;
-    const id = button.getAttribute('data-id');
-    const post = posts[id];
-
-    setPostAsVisited(id);
-
-    const modalTitle = modal.querySelector('#modal-title');
-    const modalBody = modal.querySelector('#modal-body');
-    const readButtonLink = modal.querySelector('#read-full-post-link');
-
-    modalTitle.textContent = post.title;
-    modalBody.textContent = post.description;
-    readButtonLink.href = post.link;
-    readButtonLink.textContent = i18nextInstance.t('READ');
-  });
-};
-
 export const render = (domElements, i18nextInstance) => (path, value) => {
   const {
     feedForm,
@@ -78,15 +58,16 @@ export const render = (domElements, i18nextInstance) => (path, value) => {
   } = domElements;
 
   switch (path) {
-    case 'inputValue':
-      if (!value) {
-        feedForm.reset();
-      } else {
-        feedInput.textContent = value;
-      }
-      break;
+    // case 'inputValue':
+    //   if (!value) {
+    //     feedForm.reset();
+    //   } else {
+    //     feedInput.textContent = value;
+    //   }
+    //   break;
 
     case 'feedItems':
+      postsList.innerHTML = '';
       Object.values(value).forEach((item) => {
         const linkNode = generateFeedItemLinkNode();
         const liNode = generateFeedItemLiNode();
@@ -99,9 +80,13 @@ export const render = (domElements, i18nextInstance) => (path, value) => {
         liNode.append(linkNode);
         liNode.append(buttonNode);
         postsList.append(liNode);
+
+        if (item.isRead) {
+          setPostAsVisited(item.id);
+        }
       });
       postsHeader.hidden = false;
-      initModal(value, i18nextInstance);
+      // initModal(value, i18nextInstance);
       break;
 
     case 'feedSources':
@@ -124,7 +109,7 @@ export const render = (domElements, i18nextInstance) => (path, value) => {
       inputValidationErrorDiv.innerHTML = i18nextInstance.t(value);
       break;
 
-    case 'inputState':
+    case 'feedUrlUploadState':
       if (value === 'none') {
         feedInput.classList.remove('is-valid');
         feedInput.classList.remove('is-invalid');
@@ -133,6 +118,7 @@ export const render = (domElements, i18nextInstance) => (path, value) => {
         inputValidationErrorDiv.innerHTML = '';
         feedInput.disabled = false;
         formSubmitButton.disabled = false;
+        feedForm.reset();
       } else if (value === 'sending') {
         feedInput.disabled = true;
         formSubmitButton.disabled = true;
@@ -143,6 +129,7 @@ export const render = (domElements, i18nextInstance) => (path, value) => {
         inputValidationErrorDiv.classList.remove('invalid-feedback');
         feedInput.disabled = false;
         formSubmitButton.disabled = false;
+        feedForm.reset();
       } else if (value === 'failed') {
         feedInput.classList.add('is-invalid');
         feedInput.classList.remove('is-valid');

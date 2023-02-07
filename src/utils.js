@@ -1,4 +1,8 @@
+import { ALL_ORIGINS_URL } from './constants.js';
+
 export const generateId = (value) => btoa(unescape(encodeURIComponent(value))).slice(0, 20);
+
+export const addProxy = (url) => `${ALL_ORIGINS_URL}/get?disableCache=true&url=${encodeURIComponent(url)}`;
 
 export const parseRssResponse = (response) => {
   if (!response.data?.status?.error && response.data?.contents) {
@@ -16,11 +20,12 @@ export const shouldUpdateFeedItems = (items, stateItems) => {
   return true;
 };
 
-export const setIds = (value) => ({
+export const prepareFeed = (value) => ({
   feed: { ...value.feed, id: value.feed.title },
 
   items: value.items?.map((item) => ({
     ...item,
+    isRead: false,
     id: item.title,
   })),
 });
