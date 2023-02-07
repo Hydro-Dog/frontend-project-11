@@ -85,28 +85,24 @@ export default () => {
 
     refreshFeeds();
 
-    const initModal = () => {
-      modal.addEventListener('show.bs.modal', (event) => {
-        const button = event.relatedTarget;
-        const id = button.getAttribute('data-id');
-        const post = state.feedItems[id];
-        post.isRead = true;
-        watchedState.feedItems = { ...state.feedItems, [id]: post };
-        watchedState.modalData = {
-          title: post.title,
-          description: post.description,
-          link: post.link,
-        };
-      });
-    };
-
-    initModal();
-
     const validate = (urls) => yup.object().shape({
       inputValue: yup.string()
         .url('URL_VALIDATION_ERROR')
         .test('value-duplicate', 'VALUE_DUPLICATE_ERROR', (value) => urls.every((source) => value !== source))
         .required('REQUIRED_VALIDATION_ERROR'),
+    });
+
+    modal.addEventListener('show.bs.modal', (event) => {
+      const button = event.relatedTarget;
+      const id = button.getAttribute('data-id');
+      const post = state.feedItems[id];
+      post.isRead = true;
+      watchedState.feedItems = { ...state.feedItems, [id]: post };
+      watchedState.modalData = {
+        title: post.title,
+        description: post.description,
+        link: post.link,
+      };
     });
 
     feedForm.addEventListener('submit', (event) => {
