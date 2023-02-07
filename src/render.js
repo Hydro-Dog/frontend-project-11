@@ -41,12 +41,6 @@ export const getDomNodesRefs = () => {
   };
 };
 
-const setPostAsVisited = (id) => {
-  const element = document.getElementById(id);
-  element.classList.add('fw-normal');
-  element.classList.remove('fw-bold');
-};
-
 export const render = (domElements, i18nextInstance) => (path, value) => {
   const {
     modal,
@@ -89,7 +83,9 @@ export const render = (domElements, i18nextInstance) => (path, value) => {
         postsList.append(liNode);
 
         if (item.isRead) {
-          setPostAsVisited(item.id);
+          const element = document.getElementById(item.id);
+          element.classList.add('fw-normal');
+          element.classList.remove('fw-bold');
         }
       });
       postsHeader.hidden = false;
