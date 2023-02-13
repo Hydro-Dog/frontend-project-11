@@ -74,7 +74,7 @@ export default () => {
 
     refreshFeeds();
 
-    const validate = () => yup.object().shape({
+    const generateValidationSchema = () => yup.object().shape({
       inputValue: yup.string()
         .url('URL_VALIDATION_ERROR')
         .notOneOf(state.feedsUrls, 'VALUE_DUPLICATE_ERROR')
@@ -113,7 +113,7 @@ export default () => {
       const url = formData.get('feedValue');
       event.preventDefault();
 
-      validate(watchedState.feedsUrls).validate({ inputValue: url }).then(() => {
+      generateValidationSchema(watchedState.feedsUrls).validate({ inputValue: url }).then(() => {
         watchedState.feedUrlUploadState = 'sending';
 
         return getFeed(url);
