@@ -8,6 +8,7 @@ import getFeed from './service.js';
 import {
   getDomNodesRefs,
   render,
+  initTranslations,
 } from './render.js';
 import { TIMEOUT } from './constants.js';
 
@@ -39,7 +40,9 @@ export default () => {
 
     const state = initState();
 
+    initTranslations(domElements, i18nextInstance);
     const watchedState = onChange(state, render(domElements, i18nextInstance));
+
     const pushNewFeedItems = (feedItems) => {
       const newFeedItems = {};
       Object.entries(feedItems).forEach(([key, value]) => {
@@ -126,7 +129,7 @@ export default () => {
           ...state.feedSources,
           [feeds.feed.id]: feeds.feed,
         };
-        watchedState.feedsUrls = [...state.feedsUrls, feeds.link];
+        watchedState.feedsUrls = [...state.feedsUrls, url];
         watchedState.feedUrlUploadState = 'finished';
         watchedState.inputMessage = 'SUCCESS';
       })

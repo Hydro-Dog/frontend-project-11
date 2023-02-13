@@ -41,16 +41,10 @@ export const getDomNodesRefs = () => {
   };
 };
 
-export const render = (domElements, i18nextInstance) => (path, value) => {
+export const initTranslations = (domElements, i18nextInstance) => {
   const {
-    modal,
-    feedForm,
-    feedInput,
-    postsList,
     postsHeader,
-    feedsList,
     feedsHeader,
-    inputValidationErrorDiv,
     formSubmitButton,
     feedInputLabel,
     exampleBlock,
@@ -63,6 +57,20 @@ export const render = (domElements, i18nextInstance) => (path, value) => {
   feedsHeader.innerHTML = i18nextInstance.t('FEEDS');
   postsHeader.innerHTML = i18nextInstance.t('POSTS');
   closeModalButton.innerHTML = i18nextInstance.t('CLOSE');
+};
+
+export const render = (domElements, i18nextInstance) => (path, value) => {
+  const {
+    modal,
+    feedForm,
+    feedInput,
+    postsList,
+    postsHeader,
+    feedsList,
+    feedsHeader,
+    inputValidationErrorDiv,
+    formSubmitButton,
+  } = domElements;
 
   switch (path) {
     case 'modalData': {
