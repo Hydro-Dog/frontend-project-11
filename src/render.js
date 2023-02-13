@@ -52,7 +52,17 @@ export const render = (domElements, i18nextInstance) => (path, value) => {
     feedsHeader,
     inputValidationErrorDiv,
     formSubmitButton,
+    feedInputLabel,
+    exampleBlock,
+    closeModalButton,
   } = domElements;
+
+  feedInputLabel.innerHTML = i18nextInstance.t('INPUT_LABEL');
+  formSubmitButton.innerHTML = i18nextInstance.t('SUBMIT');
+  exampleBlock.innerHTML = `${i18nextInstance.t('EXAMPLE')}https://ru.hexlet.io/lessons.rss`;
+  feedsHeader.innerHTML = i18nextInstance.t('FEEDS');
+  postsHeader.innerHTML = i18nextInstance.t('POSTS');
+  closeModalButton.innerHTML = i18nextInstance.t('CLOSE');
 
   switch (path) {
     case 'modalData': {

@@ -3,7 +3,7 @@ import * as yup from 'yup';
 import resources from '../locales/index.js';
 import i18nextInstance from './i18n.js';
 import parseRss from './rss-parser.js';
-import { prepareFeed, parseRssResponse } from './utils.js';
+import { prepareFeed } from './utils.js';
 import getFeed from './service.js';
 import {
   getDomNodesRefs,
@@ -33,26 +33,13 @@ export default () => {
     const domElements = getDomNodesRefs();
     const {
       modal,
-      feedInputLabel,
-      formSubmitButton,
-      exampleBlock,
-      feedsHeader,
-      postsHeader,
-      closeModalButton,
       feedForm,
+      postsList,
     } = domElements;
-
-    feedInputLabel.innerHTML = i18nextInstance.t('INPUT_LABEL');
-    formSubmitButton.innerHTML = i18nextInstance.t('SUBMIT');
-    exampleBlock.innerHTML = `${i18nextInstance.t('EXAMPLE')}https://ru.hexlet.io/lessons.rss`;
-    feedsHeader.innerHTML = i18nextInstance.t('FEEDS');
-    postsHeader.innerHTML = i18nextInstance.t('POSTS');
-    closeModalButton.innerHTML = i18nextInstance.t('CLOSE');
 
     const state = initState();
 
     const watchedState = onChange(state, render(domElements, i18nextInstance));
-
     const pushNewFeedItems = (feedItems) => {
       const newFeedItems = {};
       Object.entries(feedItems).forEach(([key, value]) => {
@@ -65,8 +52,7 @@ export default () => {
     };
 
     const refreshFeeds = () => {
-      const refreshRequests = state.feedsUrls.map((item) => getFeed(item)
-        .then((response) => parseRssResponse(response)));
+      const refreshRequests = state.feedsUrls.map((item) => getFeed(item));
 
       Promise.all(refreshRequests).then((feeds) => {
         feeds.forEach((feed) => {
@@ -85,10 +71,10 @@ export default () => {
 
     refreshFeeds();
 
-    const validate = (urls) => yup.object().shape({
+    const validate = () => yup.object().shape({
       inputValue: yup.string()
         .url('URL_VALIDATION_ERROR')
-        .test('value-duplicate', 'VALUE_DUPLICATE_ERROR', (value) => urls.every((source) => value !== source))
+        .notOneOf(state.feedsUrls, 'VALUE_DUPLICATE_ERROR')
         .required('REQUIRED_VALIDATION_ERROR'),
     });
 
@@ -105,41 +91,45 @@ export default () => {
       };
     });
 
+    postsList.addEventListener('click', (event) => {
+      if (event.target.nodeName === 'A') {
+        const { id } = event.target;
+        const post = state.feedItems[id];
+        post.isRead = true;
+        watchedState.feedItems = { ...state.feedItems, [id]: post };
+        watchedState.modalData = {
+          title: post.title,
+          description: post.description,
+          link: post.link,
+        };
+      }
+    });
+
     feedForm.addEventListener('submit', (event) => {
       const formData = new FormData(event.target);
       const url = formData.get('feedValue');
       event.preventDefault();
+
       validate(watchedState.feedsUrls).validate({ inputValue: url }).then(() => {
         watchedState.feedUrlUploadState = 'sending';
 
-        return Promise.all([
-          Promise.resolve(url),
-          getFeed(url).then((response) => parseRssResponse(response))]);
-      }).then(([feedUrl, content]) => {
+        return getFeed(url);
+      }).then((content) => {
         const rawData = parseRss(content);
         const feeds = prepareFeed(rawData);
-
         watchedState.feedItems = {
           ...state.feedItems,
           ...feeds.items.reduce((acc, item) => ({ ...acc, [item.title]: item }), {}),
         };
 
-        if (!state.feedSources[feeds.feed.id]) {
-          watchedState.feedSources = {
-            ...state.feedSources,
-            [feeds.feed.id]: feeds.feed,
-          };
-        }
-
-        if (!state.feedsUrls.includes(feedUrl)) {
-          watchedState.feedsUrls = [...state.feedsUrls, feedUrl];
-        }
-
+        watchedState.feedSources = {
+          ...state.feedSources,
+          [feeds.feed.id]: feeds.feed,
+        };
+        watchedState.feedsUrls = [...state.feedsUrls, feeds.link];
         watchedState.feedUrlUploadState = 'finished';
         watchedState.inputMessage = 'SUCCESS';
       })
-        .then(() => {
-        })
         .catch((err) => {
           if (err.code === 'ERR_NETWORK') {
             watchedState.inputMessage = err.code;

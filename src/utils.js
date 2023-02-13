@@ -2,13 +2,6 @@ import { ALL_ORIGINS_URL } from './constants.js';
 
 export const addProxy = (url) => `${ALL_ORIGINS_URL}/get?disableCache=true&url=${encodeURIComponent(url)}`;
 
-export const parseRssResponse = (response) => {
-  if (!response.data?.status?.error && response.data?.contents) {
-    return response.data.contents;
-  }
-  throw new Error('URL_NO_DATA_VALIDATION_ERROR');
-};
-
 export const prepareFeed = (value) => ({
   feed: { ...value.feed, id: value.feed.title },
 
