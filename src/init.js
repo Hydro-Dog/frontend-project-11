@@ -1,7 +1,7 @@
 import onChange from 'on-change';
 import * as yup from 'yup';
+import i18next from 'i18next';
 import resources from '../locales/index.js';
-import i18nextInstance from './i18n.js';
 import parseRss from './rss-parser.js';
 import { prepareFeed } from './utils.js';
 import getFeed from './service.js';
@@ -19,11 +19,11 @@ const initState = () => ({
   lang: 'ru',
   feedUrlUploadState: 'none', // none, filling, sending, finished, failed
   inputMessage: '',
-  timers: [],
   modalData: { title: '', description: '', link: '' },
 });
 
 export default () => {
+  const i18nextInstance = i18next.createInstance();
   i18nextInstance.init({
     lng: 'ru',
     resources: {
@@ -74,12 +74,12 @@ export default () => {
 
     refreshFeeds();
 
-    const generateValidationSchema = () => yup.object().shape({
+    const validateFeed = (addedFeedsUrls, newFeedUrl) => yup.object().shape({
       inputValue: yup.string()
         .url('URL_VALIDATION_ERROR')
-        .notOneOf(state.feedsUrls, 'VALUE_DUPLICATE_ERROR')
+        .notOneOf(addedFeedsUrls, 'VALUE_DUPLICATE_ERROR')
         .required('REQUIRED_VALIDATION_ERROR'),
-    });
+    }).validate({ inputValue: newFeedUrl });
 
     modal.addEventListener('show.bs.modal', (event) => {
       const button = event.relatedTarget;
@@ -113,7 +113,7 @@ export default () => {
       const url = formData.get('feedValue');
       event.preventDefault();
 
-      generateValidationSchema(watchedState.feedsUrls).validate({ inputValue: url }).then(() => {
+      validateFeed(state.feedsUrls, url).then(() => {
         watchedState.feedUrlUploadState = 'sending';
 
         return getFeed(url);
@@ -131,7 +131,6 @@ export default () => {
         };
         watchedState.feedsUrls = [...state.feedsUrls, url];
         watchedState.feedUrlUploadState = 'finished';
-        watchedState.inputMessage = 'SUCCESS';
       })
         .catch((err) => {
           if (err.code === 'ERR_NETWORK') {

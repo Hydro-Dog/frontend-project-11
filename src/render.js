@@ -150,6 +150,7 @@ export const render = (domElements, i18nextInstance) => (path, value) => {
         feedInput.disabled = false;
         formSubmitButton.disabled = false;
         feedForm.reset();
+        inputValidationErrorDiv.innerHTML = i18nextInstance.t('SUCCESS');
       } else if (value === 'failed') {
         feedInput.classList.add('is-invalid');
         feedInput.classList.remove('is-valid');
