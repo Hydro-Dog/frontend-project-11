@@ -1,20 +1,19 @@
 import { ALL_ORIGINS_URL } from './constants.js';
 
-export const addProxy = (url) => `${ALL_ORIGINS_URL}/get?disableCache=true&url=${encodeURIComponent(url)}`;
+export const addProxy = (url) => new URL(`/get?disableCache=true&url=${encodeURIComponent(url)}`, ALL_ORIGINS_URL).toString();
 
 export const prepareFeed = (value) => ({
   feed: { ...value.feed, id: value.feed.title },
 
-  items: value.items?.map((item) => ({
+  items: value.items ? value.items?.map((item) => ({
     ...item,
-    isRead: false,
     id: item.title,
-  })),
+  })) : [],
 });
 
-export const generateFeedItemLinkNode = () => {
+export const generateFeedItemLinkNode = (isRead) => {
   const aNode = document.createElement('a');
-  aNode.classList.add('fw-bold');
+  aNode.classList.add(isRead ? 'fw-normal' : 'fw-bold');
   aNode.target = '_blank';
   return aNode;
 };

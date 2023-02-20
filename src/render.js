@@ -59,7 +59,7 @@ export const initTranslations = (domElements, i18nextInstance) => {
   closeModalButton.innerHTML = i18nextInstance.t('CLOSE');
 };
 
-export const render = (domElements, i18nextInstance) => (path, value) => {
+export const render = (state, domElements, i18nextInstance) => (path, value) => {
   const {
     modal,
     feedForm,
@@ -71,7 +71,6 @@ export const render = (domElements, i18nextInstance) => (path, value) => {
     inputValidationErrorDiv,
     formSubmitButton,
   } = domElements;
-
   switch (path) {
     case 'modalData': {
       const modalTitle = modal.querySelector('#modal-title');
@@ -88,7 +87,7 @@ export const render = (domElements, i18nextInstance) => (path, value) => {
     case 'feedItems':
       postsList.innerHTML = '';
       Object.values(value).forEach((item) => {
-        const linkNode = generateFeedItemLinkNode();
+        const linkNode = generateFeedItemLinkNode(state.uiState.readPosts.includes(item.id));
         const liNode = generateFeedItemLiNode();
         const buttonNode = generateFeedItemButtonNode();
         linkNode.href = item.link;
@@ -99,14 +98,16 @@ export const render = (domElements, i18nextInstance) => (path, value) => {
         liNode.append(linkNode);
         liNode.append(buttonNode);
         postsList.append(liNode);
-
-        if (item.isRead) {
-          const element = document.getElementById(item.id);
-          element.classList.add('fw-normal');
-          element.classList.remove('fw-bold');
-        }
       });
       postsHeader.hidden = false;
+      break;
+
+    case 'uiState':
+      value.readPosts.forEach((id) => {
+        const element = document.getElementById(id);
+        element.classList.add('fw-normal');
+        element.classList.remove('fw-bold');
+      });
       break;
 
     case 'feedSources':
@@ -125,7 +126,7 @@ export const render = (domElements, i18nextInstance) => (path, value) => {
       feedsHeader.hidden = false;
       break;
 
-    case 'inputMessage':
+    case 'validationError':
       inputValidationErrorDiv.innerHTML = i18nextInstance.t(value);
       break;
 

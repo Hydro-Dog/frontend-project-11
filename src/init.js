@@ -18,8 +18,11 @@ const initState = () => ({
   feedItems: [],
   lang: 'ru',
   feedUrlUploadState: 'none', // none, filling, sending, finished, failed
-  inputMessage: '',
+  validationError: '',
   modalData: { title: '', description: '', link: '' },
+  uiState: {
+    readPosts: [],
+  },
 });
 
 export default () => {
@@ -41,7 +44,7 @@ export default () => {
     const state = initState();
 
     initTranslations(domElements, i18nextInstance);
-    const watchedState = onChange(state, render(domElements, i18nextInstance));
+    const watchedState = onChange(state, render(state, domElements, i18nextInstance));
 
     const pushNewFeedItems = (feedItems) => {
       const newFeedItems = {};
@@ -74,19 +77,26 @@ export default () => {
 
     refreshFeeds();
 
-    const validateFeed = (addedFeedsUrls, newFeedUrl) => yup.object().shape({
-      inputValue: yup.string()
-        .url('URL_VALIDATION_ERROR')
-        .notOneOf(addedFeedsUrls, 'VALUE_DUPLICATE_ERROR')
-        .required('REQUIRED_VALIDATION_ERROR'),
-    }).validate({ inputValue: newFeedUrl });
+    const validateFeed = (addedFeedsUrls, newFeedUrl) => {
+      watchedState.feedUrlUploadState = 'sending';
+      return yup.object().shape({
+        inputValue: yup.string()
+          .url('URL_VALIDATION_ERROR')
+          .notOneOf(addedFeedsUrls, 'VALUE_DUPLICATE_ERROR')
+          .required('REQUIRED_VALIDATION_ERROR'),
+      }).validate({ inputValue: newFeedUrl });
+    };
 
     modal.addEventListener('show.bs.modal', (event) => {
       const button = event.relatedTarget;
       const id = button.getAttribute('data-id');
       const post = state.feedItems[id];
-      post.isRead = true;
-      watchedState.feedItems = { ...state.feedItems, [id]: post };
+      state.uiState.readPosts = [...state.uiState.readPosts, id];
+      watchedState.uiState = {
+        ...state.uiState,
+        readPosts: state.uiState.readPosts.includes(id)
+          ? state.uiState.readPosts : [...state.uiState.readPosts, id],
+      };
       watchedState.modalData = {
         title: post.title,
         description: post.description,
@@ -98,8 +108,11 @@ export default () => {
       if (event.target.nodeName === 'A') {
         const { id } = event.target;
         const post = state.feedItems[id];
-        post.isRead = true;
-        watchedState.feedItems = { ...state.feedItems, [id]: post };
+        watchedState.uiState = {
+          ...state.uiState,
+          readPosts: state.uiState.readPosts.includes(id)
+            ? state.uiState.readPosts : [...state.uiState.readPosts, id],
+        };
         watchedState.modalData = {
           title: post.title,
           description: post.description,
@@ -113,11 +126,7 @@ export default () => {
       const url = formData.get('feedValue');
       event.preventDefault();
 
-      validateFeed(state.feedsUrls, url).then(() => {
-        watchedState.feedUrlUploadState = 'sending';
-
-        return getFeed(url);
-      }).then((content) => {
+      validateFeed(state.feedsUrls, url).then(() => getFeed(url)).then((content) => {
         const rawData = parseRss(content);
         const feeds = prepareFeed(rawData);
         watchedState.feedItems = {
@@ -134,9 +143,9 @@ export default () => {
       })
         .catch((err) => {
           if (err.code === 'ERR_NETWORK') {
-            watchedState.inputMessage = err.code;
+            watchedState.validationError = err.code;
           } else {
-            watchedState.inputMessage = err.message;
+            watchedState.validationError = err.message;
           }
 
           watchedState.feedUrlUploadState = 'failed';
