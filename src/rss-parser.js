@@ -4,8 +4,9 @@ const parse = (data) => {
   const parserError = data.querySelector('parsererror');
 
   if (parserError) {
-    throw new Error('URL_NO_DATA_VALIDATION_ERROR');
+    throw new Error(parserError);
   }
+
   const title = data.querySelector('title')?.innerHTML;
   const description = data.querySelector('description')?.innerHTML;
   const link = data.querySelector('link')?.innerHTML;

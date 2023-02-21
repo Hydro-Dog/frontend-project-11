@@ -1,6 +1,11 @@
 import { ALL_ORIGINS_URL } from './constants.js';
 
-export const addProxy = (url) => new URL(`/get?disableCache=true&url=${encodeURIComponent(url)}`, ALL_ORIGINS_URL).toString();
+export const addProxy = (url) => {
+  const params = new URLSearchParams();
+  params.set('disableCache', true);
+  params.set('url', url);
+  return new URL(`${ALL_ORIGINS_URL}/get?${params.toString()}`).toString();
+};
 
 export const prepareFeed = (value) => ({
   feed: { ...value.feed, id: value.feed.title },
