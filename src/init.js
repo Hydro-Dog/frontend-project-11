@@ -127,19 +127,23 @@ export default () => {
       event.preventDefault();
 
       validateFeed(state.feedsUrls, url).then(() => getFeed(url)).then((content) => {
-        const rawData = parseRss(content);
-        const feeds = prepareFeed(rawData);
-        watchedState.feedItems = {
-          ...state.feedItems,
-          ...feeds.items.reduce((acc, item) => ({ ...acc, [item.title]: item }), {}),
-        };
+        try {
+          const rawData = parseRss(content);
+          const feeds = prepareFeed(rawData);
+          watchedState.feedItems = {
+            ...state.feedItems,
+            ...feeds.items.reduce((acc, item) => ({ ...acc, [item.title]: item }), {}),
+          };
 
-        watchedState.feedSources = {
-          ...state.feedSources,
-          [feeds.feed.id]: feeds.feed,
-        };
-        watchedState.feedsUrls = [...state.feedsUrls, url];
-        watchedState.feedUrlUploadState = 'finished';
+          watchedState.feedSources = {
+            ...state.feedSources,
+            [feeds.feed.id]: feeds.feed,
+          };
+          watchedState.feedsUrls = [...state.feedsUrls, url];
+          watchedState.feedUrlUploadState = 'finished';
+        } catch (error) {
+          throw new Error('URL_NO_DATA_VALIDATION_ERROR');
+        }
       })
         .catch((err) => {
           if (err.code === 'ERR_NETWORK') {
