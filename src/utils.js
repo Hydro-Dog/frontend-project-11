@@ -1,10 +1,11 @@
 import { ALL_ORIGINS_URL } from './constants.js';
 
 export const addProxy = (url) => {
-  const params = new URLSearchParams();
-  params.set('disableCache', true);
-  params.set('url', url);
-  return new URL(`${ALL_ORIGINS_URL}/get?${params.toString()}`).toString();
+  const proxyUrl = new URL(ALL_ORIGINS_URL);
+  proxyUrl.pathname = '/get';
+  proxyUrl.searchParams.append('disableCache', true);
+  proxyUrl.searchParams.append('url', url);
+  return proxyUrl.toString();
 };
 
 export const prepareFeed = (value) => ({
