@@ -11,7 +11,7 @@ export const addProxy = (url) => {
 export const prepareFeed = (value) => ({
   feed: { ...value.feed, id: value.feed.title },
 
-  items: value.items ? value.items?.map((item) => ({
+  items: value.items ? value.items.map((item) => ({
     ...item,
     id: item.title,
   })) : [],
