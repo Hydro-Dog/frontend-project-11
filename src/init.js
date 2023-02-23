@@ -14,9 +14,8 @@ import { TIMEOUT } from './constants.js';
 
 const initState = () => ({
   feedsUrls: [],
-  feedSources: [],
-  feedItems: [],
-  lang: 'ru',
+  feedSources: {},
+  feedItems: {},
   feedUrlUploadState: 'none', // none, filling, sending, finished, failed
   validationError: '',
   modalData: { title: '', description: '', link: '' },
@@ -77,15 +76,12 @@ export default () => {
 
     refreshFeeds();
 
-    const validateFeed = (addedFeedsUrls, newFeedUrl) => {
-      watchedState.feedUrlUploadState = 'sending';
-      return yup.object().shape({
-        inputValue: yup.string()
-          .url('URL_VALIDATION_ERROR')
-          .notOneOf(addedFeedsUrls, 'VALUE_DUPLICATE_ERROR')
-          .required('REQUIRED_VALIDATION_ERROR'),
-      }).validate({ inputValue: newFeedUrl });
-    };
+    const validateFeed = (addedFeedsUrls, newFeedUrl) => yup.object().shape({
+      inputValue: yup.string()
+        .url('URL_VALIDATION_ERROR')
+        .notOneOf(addedFeedsUrls, 'VALUE_DUPLICATE_ERROR')
+        .required('REQUIRED_VALIDATION_ERROR'),
+    }).validate({ inputValue: newFeedUrl });
 
     modal.addEventListener('show.bs.modal', (event) => {
       const button = event.relatedTarget;
@@ -105,49 +101,49 @@ export default () => {
     });
 
     postsList.addEventListener('click', (event) => {
-      if (event.target.nodeName === 'A') {
-        const { id } = event.target;
-        const post = state.feedItems[id];
-        watchedState.uiState = {
-          ...state.uiState,
-          readPosts: state.uiState.readPosts.includes(id)
-            ? state.uiState.readPosts : [...state.uiState.readPosts, id],
-        };
-        watchedState.modalData = {
-          title: post.title,
-          description: post.description,
-          link: post.link,
-        };
+      if (event.target.nodeName !== 'A') {
+        return;
       }
+      const { id } = event.target;
+      const post = state.feedItems[id];
+      watchedState.uiState = {
+        ...state.uiState,
+        readPosts: state.uiState.readPosts.includes(id)
+          ? state.uiState.readPosts : [...state.uiState.readPosts, id],
+      };
+      watchedState.modalData = {
+        title: post.title,
+        description: post.description,
+        link: post.link,
+      };
     });
 
     feedForm.addEventListener('submit', (event) => {
       const formData = new FormData(event.target);
       const url = formData.get('feedValue');
       event.preventDefault();
+      watchedState.feedUrlUploadState = 'sending';
 
       validateFeed(state.feedsUrls, url).then(() => getFeed(url)).then((content) => {
-        try {
-          const rawData = parseRss(content);
-          const feeds = prepareFeed(rawData);
-          watchedState.feedItems = {
-            ...state.feedItems,
-            ...feeds.items.reduce((acc, item) => ({ ...acc, [item.title]: item }), {}),
-          };
+        const rawData = parseRss(content);
+        const feeds = prepareFeed(rawData);
+        watchedState.feedItems = {
+          ...state.feedItems,
+          ...feeds.items.reduce((acc, item) => ({ ...acc, [item.title]: item }), {}),
+        };
 
-          watchedState.feedSources = {
-            ...state.feedSources,
-            [feeds.feed.id]: feeds.feed,
-          };
-          watchedState.feedsUrls = [...state.feedsUrls, url];
-          watchedState.feedUrlUploadState = 'finished';
-        } catch (error) {
-          throw new Error('URL_NO_DATA_VALIDATION_ERROR');
-        }
+        watchedState.feedSources = {
+          ...state.feedSources,
+          [feeds.feed.id]: feeds.feed,
+        };
+        watchedState.feedsUrls = [...state.feedsUrls, url];
+        watchedState.feedUrlUploadState = 'finished';
       })
         .catch((err) => {
-          if (err.code === 'ERR_NETWORK') {
-            watchedState.validationError = err.code;
+          if (err.message.includes('Network Error')) {
+            watchedState.validationError = 'ERR_NETWORK';
+          } else if (err.message.includes('HTMLUnknownElement')) {
+            watchedState.validationError = 'URL_NO_DATA_VALIDATION_ERROR';
           } else {
             watchedState.validationError = err.message;
           }
